@@ -11,13 +11,15 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int _poolCapacity = 5;
     [SerializeField] private int _poolMaxSize = 5;
 
-    [SerializeField] private List<Transform> _spawnersList;
+    [SerializeField] private List<MovementDirection> _spawnersList;
 
     private ObjectPool<Enemy> _pool;
+    private WaitForSeconds _spawnWait;
 
     private void Awake()
     {
         CreatePool();
+        _spawnWait = new WaitForSeconds(_spawnInterval);
     }
 
     private void Start()
@@ -27,10 +29,11 @@ public class Spawner : MonoBehaviour
 
     private void GetAction(Enemy enemy)
     {
-        Transform spawnPoint = ChooseSpawner();
+        MovementDirection spawnPoint = ChooseSpawner();
+        var mover = enemy.GetComponent<Mover>();
 
-        enemy.transform.position = spawnPoint.transform.position;
-        enemy.transform.rotation = spawnPoint.transform.rotation;
+        enemy.transform.position = spawnPoint.StartPoint;
+        mover.Initialize(spawnPoint.Direction);
         enemy.gameObject.SetActive(true);
 
         StartCoroutine(ReturnToPoolAfterDelay(enemy));
@@ -42,6 +45,7 @@ public class Spawner : MonoBehaviour
             createFunc: () =>
             {
                 var enemy = Instantiate(_enemyPrefab);
+                enemy.WaitForLifeTime = new WaitForSeconds(enemy.Lifetime);
                 return enemy;
             },
             actionOnGet: (enemy) => GetAction(enemy),
@@ -52,12 +56,12 @@ public class Spawner : MonoBehaviour
             maxSize: _poolMaxSize);
     }
 
-    private Transform ChooseSpawner()
+    private MovementDirection ChooseSpawner()
     {
         Random random = new Random();
 
         int index = random.Next(0, _spawnersList.Count);
-        Transform spawnPoint = _spawnersList[index];
+        MovementDirection spawnPoint = _spawnersList[index];
         return spawnPoint;
     }
 
@@ -66,13 +70,13 @@ public class Spawner : MonoBehaviour
         while (true)
         {
             _pool.Get();
-            yield return new WaitForSeconds(_spawnInterval);
+            yield return _spawnWait;
         }
     }
 
     private IEnumerator ReturnToPoolAfterDelay(Enemy enemy)
     {
-        yield return new WaitForSeconds(enemy.Lifetime);
+        yield return enemy.WaitForLifeTime;
 
         _pool.Release(enemy);
     }
