@@ -1,16 +1,17 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MovementDirection : MonoBehaviour
 {
-    [SerializeField] private float _xDirection;
-    [SerializeField] private float _yDirection;
-    [SerializeField] private float _zDirection;
+    [SerializeField] private float _x;
+    [SerializeField] private float _y;
+    [SerializeField] private float _z;
     
+    public Vector3 UnitVector { get; private set; }
     public Vector3 StartPoint => transform.position;
-    public Vector3 Direction { get; private set; }
 
     private void Start()
     {
-        Direction = new Vector3(_xDirection, _yDirection, _zDirection).normalized;
+        UnitVector = new Vector3(_x, _y, _z).normalized;
     }
 }
