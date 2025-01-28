@@ -29,11 +29,7 @@ public class Spawner : MonoBehaviour
 
     private void GetAction(Enemy enemy)
     {
-        MovementDirection spawnPoint = ChooseSpawner();
-        var mover = enemy.GetComponent<Mover>();
-
-        enemy.transform.position = spawnPoint.StartPoint;
-        mover.Initialize(spawnPoint.UnitVector);
+        enemy.Move(ChooseSpawner());
         enemy.gameObject.SetActive(true);
 
         StartCoroutine(ReturnToPoolAfterDelay(enemy));
@@ -45,7 +41,6 @@ public class Spawner : MonoBehaviour
             createFunc: () =>
             {
                 var enemy = Instantiate(_enemyPrefab);
-                enemy.ChangeLifetimeWaiting(enemy.Lifetime);
                 return enemy;
             },
             actionOnGet: (enemy) => GetAction(enemy),

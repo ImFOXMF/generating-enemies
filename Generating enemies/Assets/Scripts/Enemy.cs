@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] public int Lifetime { get; } = 4;
+    [SerializeField] private int _lifetime;
+    public WaitForSeconds WaitForLifeTime{ get; private set; }
 
-    private WaitForSeconds _waitForLifeTime;
-
-    public void ChangeLifetimeWaiting(float seconds)
+    private void Awake()
     {
-        _waitForLifeTime = new WaitForSeconds(seconds);
+        WaitForLifeTime = new WaitForSeconds(_lifetime);
     }
-    
-    public WaitForSeconds WaitForLifeTime => _waitForLifeTime;
+
+    public void Move(MovementDirection spawnPoint)
+    {
+        Mover mover = GetComponent<Mover>();
+        
+        transform.position = spawnPoint.StartPoint;
+        mover.Initialize(spawnPoint.UnitVector);
+    }
 }
