@@ -11,7 +11,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int _poolCapacity = 5;
     [SerializeField] private int _poolMaxSize = 5;
 
-    [SerializeField] private List<MovementDirection> _spawnersList;
+    [SerializeField] private List<SpawnPoint> _spawnersList;
 
     private ObjectPool<Enemy> _pool;
     private WaitForSeconds _spawnWait;
@@ -51,12 +51,12 @@ public class Spawner : MonoBehaviour
             maxSize: _poolMaxSize);
     }
 
-    private MovementDirection ChooseSpawner()
+    private SpawnPoint ChooseSpawner()
     {
         Random random = new Random();
 
         int index = random.Next(0, _spawnersList.Count);
-        MovementDirection spawnPoint = _spawnersList[index];
+        SpawnPoint spawnPoint = _spawnersList[index];
         return spawnPoint;
     }
 
